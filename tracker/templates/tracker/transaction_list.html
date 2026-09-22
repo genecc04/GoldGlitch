@@ -1,5 +1,6 @@
 <h1>Transactions</h1>
-<a href="{% url 'home' %}">Home</a>
+<a href="{% url 'home' %}">Home</a><br>
+<a href="{% url 'transaction_add' %}">Add Transaction</a>
 
 {% if transactions %}
   <table>
@@ -9,6 +10,7 @@
       <th>Category</th>
       <th>Amount</th>
       <th>Description</th>
+      <th>Actions</th>
     </tr>
     {% for t in transactions %}
     <tr>
@@ -17,6 +19,10 @@
       <td>{{ t.category|default:"Uncategorized" }}</td>
       <td>{{ t.amount }}</td>
       <td>{{ t.description }}</td>
+      <td>
+        <a href="{% url 'transaction_edit' t.pk %}">Edit</a>
+        <a href="{% url 'transaction_delete' t.pk %}">Delete</a>
+      </td>
     </tr>
     {% endfor %}
   </table>
