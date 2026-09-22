@@ -1,4 +1,23 @@
 <h1>Transactions</h1>
+
+<form method="get">
+  <input type="month" name="month" value="{{ request.GET.month }}">
+  <select name="category">
+    <option value="">All categories</option>
+    {% for c in categories %}
+      <option value="{{ c.id }}" {% if request.GET.category == c.id|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>
+    {% endfor %}
+  </select>
+  <select name="type">
+    <option value="">All types</option>
+    <option value="income" {% if request.GET.type == "income" %}selected{% endif %}>Income</option>
+    <option value="expense" {% if request.GET.type == "expense" %}selected{% endif %}>Expense</option>
+  </select>
+  <input type="text" name="q" placeholder="Search description" value="{{ request.GET.q }}">
+  <button type="submit">Filter</button>
+  <a href="{% url 'transaction_list' %}">Clear</a>
+</form>
+
 <a href="{% url 'home' %}">Home</a><br>
 <a href="{% url 'transaction_add' %}">Add Transaction</a>
 

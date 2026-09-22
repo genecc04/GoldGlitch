@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import redirect, render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-from .models import Transaction
+from .models import Transaction, Category
 from .forms import TransactionForm
 
 
@@ -72,3 +72,37 @@ class TransactionDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_queryset(self):
         return Transaction.objects.filter(user=self.request.user)
+
+
+class TransactionListView(LoginRequiredMixin, ListView):
+    model = Transaction
+    template_name = 'tracker/transaction_list.html'
+    context_object_name = 'transactions'
+    paginate_by = 20
+
+    def get_queryset(self):
+        qs = Transaction.objects.filter(user=self.request.user)
+
+        month = self.request.GET.get('month')
+        if month:
+            year, mon = month.split('-')
+            qs = qs.filter(date__year=year, date__month=mon)
+
+        category_id = self.request.GET.get('category')
+        if category_id:
+            qs = qs.filter(category_id=category_id)
+
+        type_ = self.request.GET.get('type')
+        if type_:
+            qs = qs.filter(type=type_)
+
+        search = self.request.GET.get('q')
+        if search:
+            qs = qs.filter(description__icontains=search)
+
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Category.objects.filter(user=self.request.user)
+        return context
