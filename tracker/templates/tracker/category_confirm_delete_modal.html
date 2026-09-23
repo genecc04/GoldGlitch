@@ -1,0 +1,6 @@
+<h2>Delete Category</h2>
+<p>Delete category "{{ object.name }}"? Any budgets for this category will also be deleted, and any transactions using it will become uncategorized.</p>
+<form method="post" action="{{ request.path }}">
+  {% csrf_token %}
+  <button type="submit">Yes, delete</button>
+</form>

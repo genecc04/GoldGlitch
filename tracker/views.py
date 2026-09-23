@@ -11,7 +11,7 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView, T
 from django.db.models import Sum
 from django.template.loader import render_to_string
 from .models import Transaction, Category, Budget, Goal
-from .forms import TransactionForm, BudgetForm, GoalForm
+from .forms import TransactionForm, BudgetForm, GoalForm, CategoryForm
 
 
 def home(request):
@@ -318,3 +318,45 @@ class GoalDeleteView(AjaxDeleteMixin, LoginRequiredMixin, DeleteView):
 
     def get_queryset(self):
         return Goal.objects.filter(user=self.request.user)
+
+
+class CategoryListView(LoginRequiredMixin, ListView):
+    model = Category
+    template_name = 'tracker/category_list.html'
+    context_object_name = 'categories'
+
+    def get_queryset(self):
+        return Category.objects.filter(user=self.request.user)
+
+
+class CategoryCreateView(AjaxFormMixin, LoginRequiredMixin, CreateView):
+    model = Category
+    form_class = CategoryForm
+    template_name = 'tracker/category_form.html'
+    modal_template_name = 'tracker/category_form_modal.html'
+    success_url = reverse_lazy('category_list')
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+
+class CategoryUpdateView(AjaxFormMixin, LoginRequiredMixin, UpdateView):
+    model = Category
+    form_class = CategoryForm
+    template_name = 'tracker/category_form.html'
+    modal_template_name = 'tracker/category_form_modal.html'
+    success_url = reverse_lazy('category_list')
+
+    def get_queryset(self):
+        return Category.objects.filter(user=self.request.user)
+
+
+class CategoryDeleteView(AjaxDeleteMixin, LoginRequiredMixin, DeleteView):
+    model = Category
+    template_name = 'tracker/category_confirm_delete.html'
+    modal_template_name = 'tracker/category_confirm_delete_modal.html'
+    success_url = reverse_lazy('category_list')
+
+    def get_queryset(self):
+        return Category.objects.filter(user=self.request.user)

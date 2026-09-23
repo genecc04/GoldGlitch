@@ -1,0 +1,6 @@
+<h2>{% if form.instance.pk %}Edit{% else %}Add{% endif %} Category</h2>
+<form method="post" action="{{ request.path }}">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Save</button>
+</form>

@@ -17,6 +17,8 @@
       <a class="btn modal-trigger" href="{% url 'budget_delete' b.pk %}">Delete</a>
     </td>
   </tr>
+  {% empty %}
+  <p>No budgets yet.</p>
   {% endfor %}
 </table>
 {% endblock %}
