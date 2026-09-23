@@ -149,6 +149,30 @@ class BudgetCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
+class BudgetUpdateView(LoginRequiredMixin, UpdateView):
+    model = Budget
+    form_class = BudgetForm
+    template_name = 'tracker/budget_form.html'
+    success_url = reverse_lazy('budget_list')
+
+    def get_queryset(self):
+        return Budget.objects.filter(user=self.request.user)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+
+class BudgetDeleteView(LoginRequiredMixin, DeleteView):
+    model = Budget
+    template_name = 'tracker/budget_confirm_delete.html'
+    success_url = reverse_lazy('budget_list')
+
+    def get_queryset(self):
+        return Budget.objects.filter(user=self.request.user)
+
+
 class DashboardView(LoginRequiredMixin, TemplateView):
     template_name = 'tracker/dashboard.html'
 
@@ -235,3 +259,22 @@ class GoalListView(LoginRequiredMixin, ListView):
             goal.remaining = goal.target_amount - saved
             goal.percent = min(100, int(saved / goal.target_amount * 100)) if goal.target_amount else 0
         return qs
+
+
+class GoalUpdateView(LoginRequiredMixin, UpdateView):
+    model = Goal
+    form_class = GoalForm
+    template_name = 'tracker/goal_form.html'
+    success_url = reverse_lazy('goal_list')
+
+    def get_queryset(self):
+        return Goal.objects.filter(user=self.request.user)
+
+
+class GoalDeleteView(LoginRequiredMixin, DeleteView):
+    model = Goal
+    template_name = 'tracker/goal_confirm_delete.html'
+    success_url = reverse_lazy('goal_list')
+
+    def get_queryset(self):
+        return Goal.objects.filter(user=self.request.user)

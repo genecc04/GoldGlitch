@@ -10,6 +10,8 @@
     <div style="background: green; width: {{ g.percent }}%; height: 10px;"></div>
   </div>
   {% if g.target_date %}<p>Target date: {{ g.target_date }}</p>{% endif %}
+  <a href="{% url 'goal_edit' g.pk %}">Edit</a>
+  <a href="{% url 'goal_delete' g.pk %}">Delete</a>
 </div>
 {% empty %}
 <p>No goals yet.</p>

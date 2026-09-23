@@ -29,8 +29,12 @@ urlpatterns = [
     path('transactions/<int:pk>/delete/', views.TransactionDeleteView.as_view(), name='transaction_delete'),
     path('budgets/', views.BudgetListView.as_view(), name='budget_list'),
     path('budgets/add/', views.BudgetCreateView.as_view(), name='budget_add'),
+    path('budgets/<int:pk>/edit/', views.BudgetUpdateView.as_view(), name='budget_edit'),
+    path('budgets/<int:pk>/delete/', views.BudgetDeleteView.as_view(), name='budget_delete'),
     path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
     path('transactions/export/', views.export_transactions_csv, name='transaction_export'),
     path('goals/add/', views.GoalCreateView.as_view(), name='goal_add'),
     path('goals/', views.GoalListView.as_view(), name='goal_list'),
+    path('goals/<int:pk>/edit/', views.GoalUpdateView.as_view(), name='goal_edit'),
+    path('goals/<int:pk>/delete/', views.GoalDeleteView.as_view(), name='goal_delete'),
 ]

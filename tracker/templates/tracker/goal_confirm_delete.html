@@ -1,0 +1,7 @@
+<h1>Delete Goal</h1>
+<p>Delete goal "{{ object.name }}"?</p>
+<form method="post">
+  {% csrf_token %}
+  <button type="submit">Yes, delete</button>
+</form>
+<a href="{% url 'goal_list' %}">Cancel</a>
