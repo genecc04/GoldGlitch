@@ -1,5 +1,5 @@
 <h2>Delete Goal</h2>
-<p>Delete this goal: {{ object.date }} — {{ object.amount }} ({{ object.get_type_display }})?</p>
+<p>Delete goal "{{ object.name }}"?</p>
 <form method="post" action="{{ request.path }}">
   {% csrf_token %}
   <button type="submit">Yes, delete</button>

@@ -9,6 +9,9 @@ class TransactionForm(forms.ModelForm):
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),
         }
+        help_texts = {
+            'amount': 'For a Transfer withdrawing from a goal, enter a negative amount.',
+        }
 
     def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)

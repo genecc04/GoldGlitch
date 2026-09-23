@@ -53,21 +53,11 @@ class AjaxDeleteMixin:
             return [self.modal_template_name]
         return super().get_template_names()
 
-    def delete(self, request, *args, **kwargs):
-        response = super().delete(request, *args, **kwargs)
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return JsonResponse({'success': True})
         return response
-
-
-class TransactionListView(LoginRequiredMixin, ListView):
-    model = Transaction
-    template_name = 'tracker/transaction_list.html'
-    context_object_name = 'transactions'
-    paginate_by = 20
-
-    def get_queryset(self):
-        return Transaction.objects.filter(user=self.request.user)
 
 
 class TransactionCreateView(AjaxFormMixin, LoginRequiredMixin, CreateView):
@@ -167,7 +157,7 @@ class BudgetListView(LoginRequiredMixin, ListView):
         return qs
 
 
-class BudgetCreateView(AjaxFormMixin ,LoginRequiredMixin, CreateView):
+class BudgetCreateView(AjaxFormMixin, LoginRequiredMixin, CreateView):
     model = Budget
     form_class = BudgetForm
     template_name = 'tracker/budget_form.html'
@@ -184,7 +174,7 @@ class BudgetCreateView(AjaxFormMixin ,LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class BudgetUpdateView(AjaxFormMixin ,LoginRequiredMixin, UpdateView):
+class BudgetUpdateView(AjaxFormMixin, LoginRequiredMixin, UpdateView):
     model = Budget
     form_class = BudgetForm
     template_name = 'tracker/budget_form.html'
@@ -226,6 +216,8 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             total=Sum('amount'))['total'] or 0
         expenses = month_transactions.filter(type=Transaction.EXPENSE).aggregate(
             total=Sum('amount'))['total'] or 0
+        transfers = month_transactions.filter(type=Transaction.TRANSFER).aggregate(
+            total=Sum('amount'))['total'] or 0
 
         by_category = (
             month_transactions.filter(type=Transaction.EXPENSE)
@@ -236,7 +228,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
         context['income'] = income
         context['expenses'] = expenses
-        context['balance'] = income - expenses
+        context['balance'] = income - expenses - transfers
         context['category_labels'] = [
             c['category__name'] or 'Uncategorized' for c in by_category
         ]
@@ -264,12 +256,13 @@ def export_transactions_csv(request):
 
     return response
 
+
 class GoalCreateView(AjaxFormMixin, LoginRequiredMixin, CreateView):
     model = Goal
     form_class = GoalForm
     template_name = 'tracker/goal_form.html'
     modal_template_name = 'tracker/goal_form_modal.html'
-    success_url = reverse_lazy('transaction_list')
+    success_url = reverse_lazy('goal_list')
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()

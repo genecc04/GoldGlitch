@@ -1,5 +1,5 @@
 <h2>Delete Budget</h2>
-<p>Delete this budget: {{ object.date }} — {{ object.amount }} ({{ object.get_type_display }})?</p>
+<p>Delete budget for "{{ object.category.name }}" ({{ object.month|date:"F Y" }}) — {{ object.amount }}?</p>
 <form method="post" action="{{ request.path }}">
   {% csrf_token %}
   <button type="submit">Yes, delete</button>

@@ -57,3 +57,25 @@ class Budget(models.Model):
 
     def __str__(self):
         return f"{self.category} budget for {self.month.strftime('%B %Y')}"
+
+
+class Transaction(models.Model):
+    INCOME = "income"
+    EXPENSE = "expense"
+    TRANSFER = "transfer"
+    TYPE_CHOICES = [(INCOME, "Income"), (EXPENSE, "Expense"), (TRANSFER, "Transfer")]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
+    goal = models.ForeignKey(Goal, on_delete=models.SET_NULL, null=True, blank=True)
+    type = models.CharField(max_length=8, choices=TYPE_CHOICES)
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    description = models.CharField(max_length=200, blank=True)
+    date = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-date", "-created_at"]
+
+    def __str__(self):
+        return f"{self.type} {self.amount} on {self.date}"
