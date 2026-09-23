@@ -45,21 +45,6 @@ class AjaxFormMixin:
         return response
 
 
-class AjaxDeleteMixin:
-    modal_template_name = None
-
-    def get_template_names(self):
-        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return [self.modal_template_name]
-        return super().get_template_names()
-
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return JsonResponse({'success': True})
-        return response
-
-
 class TransactionCreateView(AjaxFormMixin, LoginRequiredMixin, CreateView):
     model = Transaction
     form_class = TransactionForm
@@ -93,7 +78,7 @@ class TransactionUpdateView(AjaxFormMixin, LoginRequiredMixin, UpdateView):
         return kwargs
 
 
-class TransactionDeleteView(AjaxDeleteMixin, LoginRequiredMixin, DeleteView):
+class TransactionDeleteView(AjaxFormMixin, LoginRequiredMixin, DeleteView):
     model = Transaction
     template_name = 'tracker/transaction_confirm_delete.html'
     modal_template_name = 'tracker/transaction_confirm_delete_modal.html'
@@ -190,7 +175,7 @@ class BudgetUpdateView(AjaxFormMixin, LoginRequiredMixin, UpdateView):
         return kwargs
 
 
-class BudgetDeleteView(AjaxDeleteMixin, LoginRequiredMixin, DeleteView):
+class BudgetDeleteView(AjaxFormMixin, LoginRequiredMixin, DeleteView):
     model = Budget
     template_name = 'tracker/budget_confirm_delete.html'
     modal_template_name = 'tracker/budget_confirm_delete_modal.html'
@@ -303,7 +288,7 @@ class GoalUpdateView(AjaxFormMixin, LoginRequiredMixin, UpdateView):
         return Goal.objects.filter(user=self.request.user)
 
 
-class GoalDeleteView(AjaxDeleteMixin, LoginRequiredMixin, DeleteView):
+class GoalDeleteView(AjaxFormMixin, LoginRequiredMixin, DeleteView):
     model = Goal
     template_name = 'tracker/goal_confirm_delete.html'
     modal_template_name = 'tracker/goal_confirm_delete_modal.html'
@@ -345,7 +330,7 @@ class CategoryUpdateView(AjaxFormMixin, LoginRequiredMixin, UpdateView):
         return Category.objects.filter(user=self.request.user)
 
 
-class CategoryDeleteView(AjaxDeleteMixin, LoginRequiredMixin, DeleteView):
+class CategoryDeleteView(AjaxFormMixin, LoginRequiredMixin, DeleteView):
     model = Category
     template_name = 'tracker/category_confirm_delete.html'
     modal_template_name = 'tracker/category_confirm_delete_modal.html'
