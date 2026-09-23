@@ -1,6 +1,6 @@
 from datetime import date
 import csv
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.contrib.auth import login
@@ -9,6 +9,7 @@ from django.shortcuts import redirect, render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView
 from django.db.models import Sum
+from django.template.loader import render_to_string
 from .models import Transaction, Category, Budget, Goal
 from .forms import TransactionForm, BudgetForm, GoalForm
 
@@ -29,6 +30,36 @@ def register(request):
     return render(request, 'registration/register.html', {'form': form})
 
 
+class AjaxFormMixin:
+    modal_template_name = None
+
+    def get_template_names(self):
+        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return [self.modal_template_name]
+        return super().get_template_names()
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'success': True})
+        return response
+
+
+class AjaxDeleteMixin:
+    modal_template_name = None
+
+    def get_template_names(self):
+        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return [self.modal_template_name]
+        return super().get_template_names()
+
+    def delete(self, request, *args, **kwargs):
+        response = super().delete(request, *args, **kwargs)
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'success': True})
+        return response
+
+
 class TransactionListView(LoginRequiredMixin, ListView):
     model = Transaction
     template_name = 'tracker/transaction_list.html'
@@ -39,10 +70,11 @@ class TransactionListView(LoginRequiredMixin, ListView):
         return Transaction.objects.filter(user=self.request.user)
 
 
-class TransactionCreateView(LoginRequiredMixin, CreateView):
+class TransactionCreateView(AjaxFormMixin, LoginRequiredMixin, CreateView):
     model = Transaction
     form_class = TransactionForm
     template_name = 'tracker/transaction_form.html'
+    modal_template_name = 'tracker/transaction_form_modal.html'
     success_url = reverse_lazy('transaction_list')
 
     def get_form_kwargs(self):
@@ -55,10 +87,11 @@ class TransactionCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class TransactionUpdateView(LoginRequiredMixin, UpdateView):
+class TransactionUpdateView(AjaxFormMixin, LoginRequiredMixin, UpdateView):
     model = Transaction
     form_class = TransactionForm
     template_name = 'tracker/transaction_form.html'
+    modal_template_name = 'tracker/transaction_form_modal.html'
     success_url = reverse_lazy('transaction_list')
 
     def get_queryset(self):
@@ -70,9 +103,10 @@ class TransactionUpdateView(LoginRequiredMixin, UpdateView):
         return kwargs
 
 
-class TransactionDeleteView(LoginRequiredMixin, DeleteView):
+class TransactionDeleteView(AjaxDeleteMixin, LoginRequiredMixin, DeleteView):
     model = Transaction
     template_name = 'tracker/transaction_confirm_delete.html'
+    modal_template_name = 'tracker/transaction_confirm_delete_modal.html'
     success_url = reverse_lazy('transaction_list')
 
     def get_queryset(self):
@@ -133,10 +167,11 @@ class BudgetListView(LoginRequiredMixin, ListView):
         return qs
 
 
-class BudgetCreateView(LoginRequiredMixin, CreateView):
+class BudgetCreateView(AjaxFormMixin ,LoginRequiredMixin, CreateView):
     model = Budget
     form_class = BudgetForm
     template_name = 'tracker/budget_form.html'
+    modal_template_name = 'tracker/budget_form_modal.html'
     success_url = reverse_lazy('budget_list')
 
     def get_form_kwargs(self):
@@ -149,10 +184,11 @@ class BudgetCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class BudgetUpdateView(LoginRequiredMixin, UpdateView):
+class BudgetUpdateView(AjaxFormMixin ,LoginRequiredMixin, UpdateView):
     model = Budget
     form_class = BudgetForm
     template_name = 'tracker/budget_form.html'
+    modal_template_name = 'tracker/budget_form_modal.html'
     success_url = reverse_lazy('budget_list')
 
     def get_queryset(self):
@@ -164,9 +200,10 @@ class BudgetUpdateView(LoginRequiredMixin, UpdateView):
         return kwargs
 
 
-class BudgetDeleteView(LoginRequiredMixin, DeleteView):
+class BudgetDeleteView(AjaxDeleteMixin, LoginRequiredMixin, DeleteView):
     model = Budget
     template_name = 'tracker/budget_confirm_delete.html'
+    modal_template_name = 'tracker/budget_confirm_delete_modal.html'
     success_url = reverse_lazy('budget_list')
 
     def get_queryset(self):
@@ -227,10 +264,11 @@ def export_transactions_csv(request):
 
     return response
 
-class GoalCreateView(LoginRequiredMixin, CreateView):
+class GoalCreateView(AjaxFormMixin, LoginRequiredMixin, CreateView):
     model = Goal
     form_class = GoalForm
     template_name = 'tracker/goal_form.html'
+    modal_template_name = 'tracker/goal_form_modal.html'
     success_url = reverse_lazy('transaction_list')
 
     def get_form_kwargs(self):
@@ -261,19 +299,21 @@ class GoalListView(LoginRequiredMixin, ListView):
         return qs
 
 
-class GoalUpdateView(LoginRequiredMixin, UpdateView):
+class GoalUpdateView(AjaxFormMixin, LoginRequiredMixin, UpdateView):
     model = Goal
     form_class = GoalForm
     template_name = 'tracker/goal_form.html'
+    modal_template_name = 'tracker/goal_form_modal.html'
     success_url = reverse_lazy('goal_list')
 
     def get_queryset(self):
         return Goal.objects.filter(user=self.request.user)
 
 
-class GoalDeleteView(LoginRequiredMixin, DeleteView):
+class GoalDeleteView(AjaxDeleteMixin, LoginRequiredMixin, DeleteView):
     model = Goal
     template_name = 'tracker/goal_confirm_delete.html'
+    modal_template_name = 'tracker/goal_confirm_delete_modal.html'
     success_url = reverse_lazy('goal_list')
 
     def get_queryset(self):

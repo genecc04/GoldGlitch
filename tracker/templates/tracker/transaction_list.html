@@ -2,7 +2,7 @@
 {% block content %}
 <h1>Transactions</h1>
 <div class="actions">
-  <a class="btn" href="{% url 'transaction_add' %}">Add Transaction</a>
+  <a class="btn modal-trigger" href="{% url 'transaction_add' %}">Add Transaction</a>
   <a class="btn" href="{% url 'transaction_export' %}">Export CSV</a>
 </div>
 
@@ -35,8 +35,8 @@
       <td>{{ t.amount }}</td>
       <td>{{ t.description }}</td>
       <td>
-        <a href="{% url 'transaction_edit' t.pk %}">Edit</a>
-        <a href="{% url 'transaction_delete' t.pk %}">Delete</a>
+        <a class="btn modal-trigger" href="{% url 'transaction_edit' t.pk %}">Edit</a>
+        <a class="btn modal-trigger" href="{% url 'transaction_delete' t.pk %}">Delete</a>
       </td>
     </tr>
     {% endfor %}

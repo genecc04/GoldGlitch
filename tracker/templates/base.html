@@ -7,6 +7,11 @@
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
+<dialog id="modal-dialog">
+  <button type="button" id="modal-close" aria-label="Close">&times;</button>
+  <div id="modal-body"></div>
+</dialog>
+<script src="{% static 'js/modal.js' %}"></script>
 <nav>
   <span class="brand">GoldGlitch</span>
   {% if user.is_authenticated %}
