@@ -9,8 +9,8 @@ from django.shortcuts import redirect, render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView
 from django.db.models import Sum
-from .models import Transaction, Category, Budget
-from .forms import TransactionForm, BudgetForm
+from .models import Transaction, Category, Budget, Goal
+from .forms import TransactionForm, BudgetForm, GoalForm
 
 
 def home(request):
@@ -202,3 +202,36 @@ def export_transactions_csv(request):
         ])
 
     return response
+
+class GoalCreateView(LoginRequiredMixin, CreateView):
+    model = Goal
+    form_class = GoalForm
+    template_name = 'tracker/goal_form.html'
+    success_url = reverse_lazy('transaction_list')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+
+class GoalListView(LoginRequiredMixin, ListView):
+    model = Goal
+    template_name = 'tracker/goal_list.html'
+    context_object_name = 'goals'
+
+    def get_queryset(self):
+        qs = Goal.objects.filter(user=self.request.user)
+        for goal in qs:
+            saved = Transaction.objects.filter(
+                user=self.request.user,
+                goal=goal,
+            ).aggregate(total=Sum('amount'))['total'] or 0
+            goal.saved = saved
+            goal.remaining = goal.target_amount - saved
+            goal.percent = min(100, int(saved / goal.target_amount * 100)) if goal.target_amount else 0
+        return qs

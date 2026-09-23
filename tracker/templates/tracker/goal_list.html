@@ -1,0 +1,16 @@
+<h1>Goals</h1>
+<a href="{% url 'goal_add' %}">Add Goal</a>
+<a href="{% url 'dashboard' %}">Dashboard</a>
+
+{% for g in goals %}
+<div>
+  <h3>{{ g.name }}</h3>
+  <p>{{ g.saved }} of {{ g.target_amount }} ({{ g.percent }}%)</p>
+  <div style="background: #ddd; width: 200px;">
+    <div style="background: green; width: {{ g.percent }}%; height: 10px;"></div>
+  </div>
+  {% if g.target_date %}<p>Target date: {{ g.target_date }}</p>{% endif %}
+</div>
+{% empty %}
+<p>No goals yet.</p>
+{% endfor %}

@@ -31,4 +31,6 @@ urlpatterns = [
     path('budgets/add/', views.BudgetCreateView.as_view(), name='budget_add'),
     path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
     path('transactions/export/', views.export_transactions_csv, name='transaction_export'),
+    path('goals/add/', views.GoalCreateView.as_view(), name='goal_add'),
+    path('goals/', views.GoalListView.as_view(), name='goal_list'),
 ]
