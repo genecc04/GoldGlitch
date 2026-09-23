@@ -19,7 +19,8 @@
 </form>
 
 <a href="{% url 'home' %}">Home</a><br>
-<a href="{% url 'transaction_add' %}">Add Transaction</a>
+<a href="{% url 'transaction_add' %}">Add Transaction</a><br>
+<a href="{% url 'transaction_export' %}">Export CSV</a>
 
 {% if transactions %}
   <table>

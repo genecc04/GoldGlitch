@@ -1,4 +1,7 @@
 from datetime import date
+import csv
+from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
@@ -178,3 +181,24 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         ]
         context['category_totals'] = [float(c['total']) for c in by_category]
         return context
+
+
+@login_required
+def export_transactions_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="transactions.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Date', 'Type', 'Category', 'Amount', 'Description'])
+
+    transactions = Transaction.objects.filter(user=request.user).select_related('category')
+    for t in transactions:
+        writer.writerow([
+            t.date,
+            t.get_type_display(),
+            t.category.name if t.category else 'Uncategorized',
+            t.amount,
+            t.description,
+        ])
+
+    return response
