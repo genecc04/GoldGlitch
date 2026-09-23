@@ -1,7 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
 <h1>Delete Transaction</h1>
 <p>Delete this transaction: {{ object.date }} — {{ object.amount }} ({{ object.get_type_display }})?</p>
 <form method="post">
   {% csrf_token %}
   <button type="submit">Yes, delete</button>
 </form>
-<a href="{% url 'transaction_list' %}">Cancel</a>
+<p style="margin-top:12px;"><a href="{% url 'transaction_list' %}">Cancel</a></p>
+{% endblock %}

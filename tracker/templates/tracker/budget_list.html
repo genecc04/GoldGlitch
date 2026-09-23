@@ -1,27 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
 <h1>Budgets</h1>
-<a href="{% url 'transaction_list' %}">Transactions</a><br>
-<a href="{% url 'budget_add' %}">Add Budget</a>
+<div class="actions"><a class="btn" href="{% url 'budget_add' %}">Add Budget</a></div>
 
 <table>
-  <tr>
-    <th>Category</th>
-    <th>Month</th>
-    <th>Budget</th>
-    <th>Spent</th>
-    <th>Remaining</th>
-    <th>Actions</th>
-  </tr>
+  <tr><th>Category</th><th>Month</th><th>Budget</th><th>Spent</th><th>Remaining</th><th>Actions</th></tr>
   {% for b in budgets %}
-  <tr {% if b.spent > b.amount %}style="color: red;"{% endif %}>
+  <tr {% if b.spent > b.amount %}class="over-budget"{% endif %}>
     <td>{{ b.category }}</td>
     <td>{{ b.month|date:"F Y" }}</td>
     <td>{{ b.amount }}</td>
     <td>{{ b.spent }}</td>
     <td>{{ b.remaining }}</td>
     <td>
-        <a href="{% url 'budget_edit' b.pk %}">Edit</a>
-        <a href="{% url 'budget_delete' b.pk %}">Delete</a>
+      <a href="{% url 'budget_edit' b.pk %}">Edit</a>
+      <a href="{% url 'budget_delete' b.pk %}">Delete</a>
     </td>
   </tr>
   {% endfor %}
 </table>
+{% endblock %}

@@ -1,7 +1,10 @@
-<h1>Add a Goal</h1>
+{% extends "base.html" %}
+{% block content %}
+<h1>{% if form.instance.pk %}Edit{% else %}Add{% endif %} Goal</h1>
 <form method="post">
   {% csrf_token %}
   {{ form.as_p }}
   <button type="submit">Save</button>
 </form>
-<a href="{% url 'goal_list' %}">Cancel</a>
+<p style="margin-top:12px;"><a href="{% url 'goal_list' %}">Cancel</a></p>
+{% endblock %}

@@ -1,14 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
 <h1>Goals</h1>
-<a href="{% url 'goal_add' %}">Add Goal</a>
-<a href="{% url 'dashboard' %}">Dashboard</a>
+<div class="actions"><a class="btn" href="{% url 'goal_add' %}">Add Goal</a></div>
 
 {% for g in goals %}
-<div>
+<div class="card">
   <h3>{{ g.name }}</h3>
   <p>{{ g.saved }} of {{ g.target_amount }} ({{ g.percent }}%)</p>
-  <div style="background: #ddd; width: 200px;">
-    <div style="background: green; width: {{ g.percent }}%; height: 10px;"></div>
-  </div>
+  <div class="progress-track"><div class="progress-fill" style="width: {{ g.percent }}%;"></div></div>
   {% if g.target_date %}<p>Target date: {{ g.target_date }}</p>{% endif %}
   <a href="{% url 'goal_edit' g.pk %}">Edit</a>
   <a href="{% url 'goal_delete' g.pk %}">Delete</a>
@@ -16,3 +15,4 @@
 {% empty %}
 <p>No goals yet.</p>
 {% endfor %}
+{% endblock %}
