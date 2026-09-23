@@ -32,3 +32,16 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f"{self.type} {self.amount} on {self.date}"
+
+
+class Budget(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    month = models.DateField()
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+
+    class Meta:
+        unique_together = ['user', 'category', 'month']
+
+    def __str__(self):
+        return f"{self.category} budget for {self.month.strftime('%B %Y')}"

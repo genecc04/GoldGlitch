@@ -27,4 +27,7 @@ urlpatterns = [
     path('transactions/add/', views.TransactionCreateView.as_view(), name='transaction_add'),
     path('transactions/<int:pk>/edit/', views.TransactionUpdateView.as_view(), name='transaction_edit'),
     path('transactions/<int:pk>/delete/', views.TransactionDeleteView.as_view(), name='transaction_delete'),
+    path('budgets/', views.BudgetListView.as_view(), name='budget_list'),
+    path('budgets/add/', views.BudgetCreateView.as_view(), name='budget_add'),
+    path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
 ]

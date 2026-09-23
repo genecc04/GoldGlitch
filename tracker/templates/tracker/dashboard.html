@@ -1,0 +1,29 @@
+<h1>Dashboard</h1>
+<a href="{% url 'transaction_list' %}">Transactions</a>
+<a href="{% url 'budget_list' %}">Budgets</a>
+
+<p>Income: {{ income }}</p>
+<p>Expenses: {{ expenses }}</p>
+<p>Balance: {{ balance }}</p>
+
+<canvas id="categoryChart" width="400" height="400"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const labels = {{ category_labels|safe }};
+  const totals = {{ category_totals|safe }};
+
+  new Chart(document.getElementById('categoryChart'), {
+    type: 'pie',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: totals,
+        backgroundColor: [
+          '#4e79a7', '#f28e2b', '#e15759', '#76b7b2',
+          '#59a14f', '#edc949', '#af7aa1', '#ff9da7'
+        ]
+      }]
+    }
+  });
+</script>
