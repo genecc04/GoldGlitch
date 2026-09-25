@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Delete Budget</h1>
-<p>Delete budget for {{ object.category }} ({{ object.month|date:"F Y" }})?</p>
-<form method="post">
-  {% csrf_token %}
-  <button type="submit">Yes, delete</button>
-</form>
-<p style="margin-top:12px;"><a href="{% url 'budget_list' %}">Cancel</a></p>
+<div class="container">
+  <h1>Delete Budget</h1>
+  <p>Delete budget for {{ object.category }} ({{ object.month|date:"F Y" }})?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Yes, delete</button>
+  </form>
+  <p style="margin-top:12px;"><a href="{% url 'budget_list' %}">Cancel</a></p>
+</div>
 {% endblock %}

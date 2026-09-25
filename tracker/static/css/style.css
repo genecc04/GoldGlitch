@@ -66,6 +66,12 @@ nav form {
   padding: 24px; 
 }
 
+.container-wide {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
 h1, h2, h3 { 
   color: var(--text-bright); 
 }
@@ -187,6 +193,13 @@ button[type="submit"]:hover { background: #009aa6; }
   height: 100%; 
 }
 
+.inline-action {
+  background: none;
+  border: none;
+  padding: 0;
+  display: inline;
+}
+
 .summary { 
   display: flex; 
   gap: 20px; 
@@ -202,6 +215,26 @@ button[type="submit"]:hover { background: #009aa6; }
   font-size: 22px; 
   color: var(--text-bright); 
   font-weight: 700; 
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.chart-grid .card {
+  margin-bottom: 0;
+}
+
+.chart-wrapper {
+  max-width: 100%;
+}
+
+@media (max-width: 700px) {
+  .chart-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .filters {

@@ -1,55 +1,57 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Transactions</h1>
-<div class="actions">
-  <a class="btn modal-trigger" href="{% url 'transaction_add' %}">Add Transaction</a>
-  <a class="btn" href="{% url 'transaction_export' %}">Export CSV</a>
-</div>
-
-<form method="get" class="filters">
-  <input type="month" name="month" value="{{ request.GET.month }}">
-  <select name="category">
-    <option value="">All categories</option>
-    {% for c in categories %}
-      <option value="{{ c.id }}" {% if request.GET.category == c.id|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>
-    {% endfor %}
-  </select>
-  <select name="type">
-    <option value="">All types</option>
-    <option value="income" {% if request.GET.type == "income" %}selected{% endif %}>Income</option>
-    <option value="expense" {% if request.GET.type == "expense" %}selected{% endif %}>Expense</option>
-  </select>
-  <input type="text" name="q" placeholder="Search description" value="{{ request.GET.q }}">
-  <button type="submit">Filter</button>
-  <a class="btn" href="{% url 'transaction_list' %}">Clear</a>
-</form>
-
-{% if transactions %}
-  <table>
-    <tr><th>Date</th><th>Type</th><th>Category</th><th>Amount</th><th>Description</th><th>Actions</th></tr>
-    {% for t in transactions %}
-    <tr>
-      <td>{{ t.date }}</td>
-      <td>{{ t.get_type_display }}</td>
-      <td>{{ t.category|default:"Uncategorized" }}</td>
-      <td>{{ t.amount }}</td>
-      <td>{{ t.description }}</td>
-      <td>
-        <a class="btn modal-trigger" href="{% url 'transaction_edit' t.pk %}">Edit</a>
-        <a class="btn modal-trigger" href="{% url 'transaction_delete' t.pk %}">Delete</a>
-      </td>
-    </tr>
-    {% endfor %}
-  </table>
-{% else %}
-  <p>No transactions yet.</p>
-{% endif %}
-
-{% if is_paginated %}
-  <div class="pagination">
-    {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">Previous</a>{% endif %}
-    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-    {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">Next</a>{% endif %}
+<div class="container">
+  <h1>Transactions</h1>
+  <div class="actions">
+    <a class="btn modal-trigger" href="{% url 'transaction_add' %}">Add Transaction</a>
+    <a class="btn" href="{% url 'transaction_export' %}">Export CSV</a>
   </div>
-{% endif %}
+
+  <form method="get" class="filters">
+    <input type="month" name="month" value="{{ request.GET.month }}">
+    <select name="category">
+      <option value="">All categories</option>
+      {% for c in categories %}
+        <option value="{{ c.id }}" {% if request.GET.category == c.id|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>
+      {% endfor %}
+    </select>
+    <select name="type">
+      <option value="">All types</option>
+      <option value="income" {% if request.GET.type == "income" %}selected{% endif %}>Income</option>
+      <option value="expense" {% if request.GET.type == "expense" %}selected{% endif %}>Expense</option>
+    </select>
+    <input type="text" name="q" placeholder="Search description" value="{{ request.GET.q }}">
+    <button type="submit">Filter</button>
+    <a class="btn" href="{% url 'transaction_list' %}">Clear</a>
+  </form>
+
+  {% if transactions %}
+    <table>
+      <tr><th>Date</th><th>Type</th><th>Category</th><th>Amount</th><th>Description</th><th>Actions</th></tr>
+      {% for t in transactions %}
+      <tr>
+        <td>{{ t.date }}</td>
+        <td>{{ t.get_type_display }}</td>
+        <td>{{ t.category|default:"Uncategorized" }}</td>
+        <td>{{ t.amount }}</td>
+        <td>{{ t.description }}</td>
+        <td>
+          <a class="btn modal-trigger" href="{% url 'transaction_edit' t.pk %}">Edit</a>
+          <a class="btn modal-trigger" href="{% url 'transaction_delete' t.pk %}">Delete</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  {% else %}
+    <p>No transactions yet.</p>
+  {% endif %}
+
+  {% if is_paginated %}
+    <div class="pagination">
+      {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">Previous</a>{% endif %}
+      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+      {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">Next</a>{% endif %}
+    </div>
+  {% endif %}
+</div>
 {% endblock %}

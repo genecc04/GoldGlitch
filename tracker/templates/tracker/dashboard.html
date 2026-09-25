@@ -1,34 +1,58 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Dashboard</h1>
+<div class="container-wide">
+  <h1>Dashboard</h1>
 
-<div class="summary">
-  <div class="card"><div>Income</div><div class="value">{{ income }}</div></div>
-  <div class="card"><div>Expenses</div><div class="value">{{ expenses }}</div></div>
-  <div class="card"><div>Balance</div><div class="value">{{ balance }}</div></div>
-</div>
+  <div class="summary">
+    <div class="card"><div>Income</div><div class="value">{{ income }}</div></div>
+    <div class="card"><div>Expenses</div><div class="value">{{ expenses }}</div></div>
+    <div class="card"><div>Balance</div><div class="value">{{ balance }}</div></div>
+    <div class="card"><div>Savings</div><div class="value">{{ total_savings }}</div></div>
+  </div>
 
-<div class="card">
-  <canvas id="categoryChart" width="400" height="400"></canvas>
-</div>
+  <div class="chart-grid">
+    <div class="card">
+      <h3>Overall Spending</h3>
+      <div class="chart-wrapper">
+        <canvas id="overallChart"></canvas>
+      </div>
+    </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-  const labels = {{ category_labels|safe }};
-  const totals = {{ category_totals|safe }};
+    <div class="card">
+      <h3>Expense Breakdown</h3>
+      <div class="chart-wrapper">
+        <canvas id="expenseChart"></canvas>
+      </div>
+    </div>
 
-  new Chart(document.getElementById('categoryChart'), {
-    type: 'pie',
-    data: {
-      labels: labels,
-      datasets: [{
-        data: totals,
-        backgroundColor: ['#00b3c0', '#e15759', '#f28e2b', '#59a14f', '#af7aa1', '#edc949', '#76b7b2', '#4e79a7']
-      }]
-    },
-    options: {
-      plugins: { legend: { labels: { color: '#e4e9ef' } } }
+    <div class="card">
+      <h3>Income Breakdown</h3>
+      <div class="chart-wrapper">
+        <canvas id="incomeChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const palette = ['#00b3c0', '#e15759', '#f28e2b', '#59a14f', '#af7aa1', '#edc949', '#76b7b2', '#4e79a7'];
+    const legendOptions = { plugins: { legend: { labels: { color: '#e4e9ef' } } } };
+
+    function makePieChart(canvasId, labels, totals) {
+      if (!labels.length) return;
+      new Chart(document.getElementById(canvasId), {
+        type: 'pie',
+        data: {
+          labels: labels,
+          datasets: [{ data: totals, backgroundColor: palette }]
+        },
+        options: legendOptions
+      });
     }
-  });
-</script>
+
+    makePieChart('overallChart', {{ category_labels|safe }}, {{ category_totals|safe }});
+    makePieChart('expenseChart', {{ expense_labels|safe }}, {{ expense_totals|safe }});
+    makePieChart('incomeChart', {{ income_labels|safe }}, {{ income_totals|safe }});
+  </script>
+</div>
 {% endblock %}

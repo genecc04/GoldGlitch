@@ -5,11 +5,11 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView
 from django.db.models import Sum
-from django.template.loader import render_to_string
+from django.utils import timezone
 from .models import Transaction, Category, Budget, Goal
 from .forms import TransactionForm, BudgetForm, GoalForm, CategoryForm
 
@@ -204,20 +204,41 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         transfers = month_transactions.filter(type=Transaction.TRANSFER).aggregate(
             total=Sum('amount'))['total'] or 0
 
-        by_category = (
+        total_savings = Transaction.objects.filter(
+            user=user, type=Transaction.TRANSFER
+        ).aggregate(total=Sum('amount'))['total'] or 0
+
+        def category_breakdown(queryset):
+            rows = (
+                queryset
+                .values('category__name')
+                .annotate(total=Sum('amount'))
+                .order_by('-total')
+            )
+            labels = [r['category__name'] or 'Uncategorized' for r in rows]
+            totals = [float(r['total']) for r in rows]
+            return labels, totals
+
+        overall_labels, overall_totals = category_breakdown(
             month_transactions.filter(type=Transaction.EXPENSE)
-            .values('category__name')
-            .annotate(total=Sum('amount'))
-            .order_by('-total')
+        )
+        expense_labels, expense_totals = category_breakdown(
+            month_transactions.filter(type=Transaction.EXPENSE)
+        )
+        income_labels, income_totals = category_breakdown(
+            month_transactions.filter(type=Transaction.INCOME)
         )
 
         context['income'] = income
         context['expenses'] = expenses
         context['balance'] = income - expenses - transfers
-        context['category_labels'] = [
-            c['category__name'] or 'Uncategorized' for c in by_category
-        ]
-        context['category_totals'] = [float(c['total']) for c in by_category]
+        context['total_savings'] = total_savings
+        context['category_labels'] = overall_labels
+        context['category_totals'] = overall_totals
+        context['expense_labels'] = expense_labels
+        context['expense_totals'] = expense_totals
+        context['income_labels'] = income_labels
+        context['income_totals'] = income_totals
         return context
 
 
@@ -296,6 +317,16 @@ class GoalDeleteView(AjaxFormMixin, LoginRequiredMixin, DeleteView):
 
     def get_queryset(self):
         return Goal.objects.filter(user=self.request.user)
+
+
+@login_required
+def complete_goal(request, pk):
+    goal = get_object_or_404(Goal, pk=pk, user=request.user)
+    if request.method == 'POST':
+        goal.is_completed = True
+        goal.completed_at = timezone.now().date()
+        goal.save()
+    return redirect('goal_list')
 
 
 class CategoryListView(LoginRequiredMixin, ListView):

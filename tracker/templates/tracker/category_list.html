@@ -1,20 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Categories</h1>
-<div class="actions"><a class="btn modal-trigger" href="{% url 'category_add' %}">Add Category</a></div>
+<div class="container">
+  <h1>Categories</h1>
+  <div class="actions"><a class="btn modal-trigger" href="{% url 'category_add' %}">Add Category</a></div>
 
-<table>
-  <tr><th>Name</th></tr>
-  {% for c in categories %}
-  <tr>
-    <td>
-        <a class="btn modal-trigger" href="{% url 'category_edit' c.pk %}">Edit</a> &nbsp;
-        <a class="btn modal-trigger" href="{% url 'category_delete' c.pk %}">Delete</a>
-        &nbsp;&nbsp;&nbsp;{{ c.name }}
-    </td>
-  </tr>
-  {% empty %}
-  <p>No categories yet.</p>
-  {% endfor %}
-</table>
+  <table>
+    <tr><th>Name</th></tr>
+    {% for c in categories %}
+    <tr>
+      <td>
+          <a class="btn modal-trigger" href="{% url 'category_edit' c.pk %}">Edit</a> &nbsp;
+          <a class="btn modal-trigger" href="{% url 'category_delete' c.pk %}">Delete</a>
+          &nbsp;&nbsp;&nbsp;{{ c.name }}
+      </td>
+    </tr>
+    {% empty %}
+    <p>No categories yet.</p>
+    {% endfor %}
+  </table>
+</div>
 {% endblock %}

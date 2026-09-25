@@ -1,24 +1,26 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Budgets</h1>
-<a class="btn modal-trigger" href="{% url 'budget_add' %}">Add Budget</a><br><br>
+<div class="container">
+  <h1>Budgets</h1>
+  <a class="btn modal-trigger" href="{% url 'budget_add' %}">Add Budget</a><br><br>
 
-<table>
-  <tr><th>Category</th><th>Month</th><th>Budget</th><th>Spent</th><th>Remaining</th><th>Actions</th></tr>
-  {% for b in budgets %}
-  <tr {% if b.spent > b.amount %}class="over-budget"{% endif %}>
-    <td>{{ b.category }}</td>
-    <td>{{ b.month|date:"F Y" }}</td>
-    <td>{{ b.amount }}</td>
-    <td>{{ b.spent }}</td>
-    <td>{{ b.remaining }}</td>
-    <td>
-      <a class="btn modal-trigger" href="{% url 'budget_edit' b.pk %}">Edit</a>
-      <a class="btn modal-trigger" href="{% url 'budget_delete' b.pk %}">Delete</a>
-    </td>
-  </tr>
-  {% empty %}
-  <p>No budgets yet.</p>
-  {% endfor %}
-</table>
+  <table>
+    <tr><th>Category</th><th>Month</th><th>Budget</th><th>Spent</th><th>Remaining</th><th>Actions</th></tr>
+    {% for b in budgets %}
+    <tr {% if b.spent > b.amount %}class="over-budget"{% endif %}>
+      <td>{{ b.category }}</td>
+      <td>{{ b.month|date:"F Y" }}</td>
+      <td>{{ b.amount }}</td>
+      <td>{{ b.spent }}</td>
+      <td>{{ b.remaining }}</td>
+      <td>
+        <a class="btn modal-trigger" href="{% url 'budget_edit' b.pk %}">Edit</a>
+        <a class="btn modal-trigger" href="{% url 'budget_delete' b.pk %}">Delete</a>
+      </td>
+    </tr>
+    {% empty %}
+    <p>No budgets yet.</p>
+    {% endfor %}
+  </table>
+</div>
 {% endblock %}

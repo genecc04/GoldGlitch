@@ -1,12 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Welcome to GoldGlitch</h1>
-{% if user.is_authenticated %}
-  <p>You're logged in as {{ user.username }}.</p>
-  <a class="btn" href="{% url 'dashboard' %}">Go to Dashboard</a>
-{% else %}
-  <p>Track your income, expenses, budgets, and goals.</p>
-  <a class="btn" href="{% url 'login' %}">Log in</a>
-  <a class="btn" href="{% url 'register' %}">Register</a>
-{% endif %}
+<div class="container">
+  <h1>Welcome to GoldGlitch</h1>
+  {% if user.is_authenticated %}
+    <p>You're logged in as {{ user.username }}.</p>
+    <a class="btn" href="{% url 'dashboard' %}">Go to Dashboard</a>
+  {% else %}
+    <p>Track your income, expenses, budgets, and goals.</p>
+    <a class="btn" href="{% url 'login' %}">Log in</a>
+    <a class="btn" href="{% url 'register' %}">Register</a>
+  {% endif %}
+</div>
 {% endblock %}

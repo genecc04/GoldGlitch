@@ -11,6 +11,7 @@
   <button type="button" id="modal-close" aria-label="Close">&times;</button>
   <div id="modal-body"></div>
 </dialog>
+<script src="{% static 'js/transaction_form.js' %}"></script>
 <script src="{% static 'js/modal.js' %}"></script>
 <nav>
   <span class="brand">GoldGlitch</span>
@@ -20,7 +21,7 @@
     <a href="{% url 'transaction_list' %}">Transactions</a>
     <a href="{% url 'budget_list' %}">Budgets</a>
     <a href="{% url 'goal_list' %}">Goals</a>
-    <form method="post" action="{% url 'logout' %}">
+    <form method="post" action="{% url 'logout' %}" class="inline-action">
       {% csrf_token %}
       <button type="submit">Log out ({{ user.username }})</button>
     </form>
@@ -29,8 +30,6 @@
     <a href="{% url 'register' %}">Register</a>
   {% endif %}
 </nav>
-<div class="container">
 {% block content %}{% endblock %}
-</div>
 </body>
 </html>

@@ -20,6 +20,8 @@ class Goal(models.Model):
     target_amount = models.DecimalField(max_digits=12, decimal_places=2)
     target_date = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    is_completed = models.BooleanField(default=False)
+    completed_at = models.DateField(null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -63,7 +65,7 @@ class Transaction(models.Model):
     INCOME = "income"
     EXPENSE = "expense"
     TRANSFER = "transfer"
-    TYPE_CHOICES = [(INCOME, "Income"), (EXPENSE, "Expense"), (TRANSFER, "Transfer")]
+    TYPE_CHOICES = [(INCOME, "Income"), (EXPENSE, "Expense"), (TRANSFER, "Savings")]
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)

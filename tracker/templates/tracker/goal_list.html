@@ -1,18 +1,28 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Goals</h1>
-<a class="btn modal-trigger" href="{% url 'goal_add' %}">Add Goal</a><br><br>
+<div class="container">
+  <h1>Goals</h1>
+  <a class="btn modal-trigger" href="{% url 'goal_add' %}">Add Goal</a><br><br>
 
-{% for g in goals %}
-<div class="card">
-  <h3>{{ g.name }}</h3>
-  <p>{{ g.saved }} of {{ g.target_amount }} ({{ g.percent }}%)</p>
-  <div class="progress-track"><div class="progress-fill" style="width: {{ g.percent }}%;"></div></div>
-  {% if g.target_date %}<p>Target date: {{ g.target_date }}</p>{% endif %}
-  <a class="btn modal-trigger" href="{% url 'goal_edit' g.pk %}">Edit</a>
-  <a class="btn modal-trigger" href="{% url 'goal_delete' g.pk %}">Delete</a>
+  {% for g in goals %}
+  <div class="card">
+    <h3>{{ g.name }}{% if g.is_completed %} ✅{% endif %}</h3>
+    <p>{{ g.saved }} of {{ g.target_amount }} ({{ g.percent }}%)</p>
+    <div class="progress-track"><div class="progress-fill" style="width: {{ g.percent }}%;"></div></div>
+    {% if g.target_date %}<p>Target date: {{ g.target_date }}</p>{% endif %}
+    {% if g.is_completed %}
+      <p>Completed on {{ g.completed_at }}</p>
+    {% elif g.percent >= 100 %}
+      <form method="post" action="{% url 'goal_complete' g.pk %}" class="inline-action">
+        {% csrf_token %}
+        <button type="submit" class="btn">Mark as completed</button>
+      </form>
+    {% endif %}
+    <a class="btn modal-trigger" href="{% url 'goal_edit' g.pk %}">Edit</a>
+    <a class="btn modal-trigger" href="{% url 'goal_delete' g.pk %}">Delete</a>
+  </div>
+  {% empty %}
+  <p>No goals yet.</p>
+  {% endfor %}
 </div>
-{% empty %}
-<p>No goals yet.</p>
-{% endfor %}
 {% endblock %}

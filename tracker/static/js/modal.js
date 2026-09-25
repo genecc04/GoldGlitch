@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function attachFormHandler() {
     const form = modalBody.querySelector('form');
     if (!form) return;
+    setupDirectionToggle(modalBody);
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       fetch(form.action, {
