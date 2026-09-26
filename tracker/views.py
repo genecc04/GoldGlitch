@@ -10,6 +10,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView
 from django.db.models import Sum
 from django.utils import timezone
+from dateutil.relativedelta import relativedelta
 from .models import Transaction, Category, Budget, Goal
 from .forms import TransactionForm, BudgetForm, GoalForm, CategoryForm
 
@@ -229,6 +230,19 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             month_transactions.filter(type=Transaction.INCOME)
         )
 
+        trend_labels = []
+        trend_balances = []
+        for i in range(5, -1, -1):
+            month_date = today.replace(day=1) - relativedelta(months=i)
+            month_qs = Transaction.objects.filter(
+                user=user, date__year=month_date.year, date__month=month_date.month
+            )
+            m_income = month_qs.filter(type=Transaction.INCOME).aggregate(total=Sum('amount'))['total'] or 0
+            m_expenses = month_qs.filter(type=Transaction.EXPENSE).aggregate(total=Sum('amount'))['total'] or 0
+            m_transfers = month_qs.filter(type=Transaction.TRANSFER).aggregate(total=Sum('amount'))['total'] or 0
+            trend_labels.append(month_date.strftime('%b %Y'))
+            trend_balances.append(float(m_income - m_expenses - m_transfers))
+
         context['income'] = income
         context['expenses'] = expenses
         context['balance'] = income - expenses - transfers
@@ -239,6 +253,8 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         context['expense_totals'] = expense_totals
         context['income_labels'] = income_labels
         context['income_totals'] = income_totals
+        context['trend_labels'] = trend_labels
+        context['trend_balances'] = trend_balances
         return context
 
 

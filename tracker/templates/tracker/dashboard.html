@@ -10,24 +10,24 @@
     <div class="card"><div>Savings</div><div class="value">{{ total_savings }}</div></div>
   </div>
 
+  <div class="card">
+    <h3>Balance Trend</h3>
+    <div class="chart-wrapper">
+      <canvas id="trendChart"></canvas>
+    </div>
+  </div>
+
   <div class="chart-grid">
     <div class="card">
-      <h3>Overall Spending</h3>
-      <div class="chart-wrapper">
-        <canvas id="overallChart"></canvas>
-      </div>
-    </div>
-
-    <div class="card">
       <h3>Expense Breakdown</h3>
-      <div class="chart-wrapper">
+      <div class="chart-wrapper chart-pie">
         <canvas id="expenseChart"></canvas>
       </div>
     </div>
 
     <div class="card">
       <h3>Income Breakdown</h3>
-      <div class="chart-wrapper">
+      <div class="chart-wrapper chart-pie">
         <canvas id="incomeChart"></canvas>
       </div>
     </div>
@@ -37,20 +37,41 @@
   <script>
     const palette = ['#00b3c0', '#e15759', '#f28e2b', '#59a14f', '#af7aa1', '#edc949', '#76b7b2', '#4e79a7'];
     const legendOptions = { plugins: { legend: { labels: { color: '#e4e9ef' } } } };
+    const axisOptions = {
+      scales: {
+        x: { ticks: { color: '#e4e9ef' }, grid: { color: '#28323e' } },
+        y: { ticks: { color: '#e4e9ef' }, grid: { color: '#28323e' } }
+      }
+    };
 
     function makePieChart(canvasId, labels, totals) {
       if (!labels.length) return;
       new Chart(document.getElementById(canvasId), {
         type: 'pie',
-        data: {
-          labels: labels,
-          datasets: [{ data: totals, backgroundColor: palette }]
-        },
+        data: { labels: labels, datasets: [{ data: totals, backgroundColor: palette }] },
         options: legendOptions
       });
     }
 
-    makePieChart('overallChart', {{ category_labels|safe }}, {{ category_totals|safe }});
+    function makeLineChart(canvasId, labels, values) {
+      new Chart(document.getElementById(canvasId), {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Balance',
+            data: values,
+            borderColor: '#00b3c0',
+            backgroundColor: 'rgba(0, 179, 192, 0.15)',
+            fill: true,
+            tension: 0.2
+          }]
+        },
+        options: { ...legendOptions, ...axisOptions, maintainAspectRatio: false }
+      });
+    }
+
+    makeLineChart('trendChart', {{ trend_labels|safe }}, {{ trend_balances|safe }});
     makePieChart('expenseChart', {{ expense_labels|safe }}, {{ expense_totals|safe }});
     makePieChart('incomeChart', {{ income_labels|safe }}, {{ income_totals|safe }});
   </script>
